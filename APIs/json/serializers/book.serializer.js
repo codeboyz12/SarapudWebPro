@@ -1,7 +1,7 @@
 const JSONAPISerializer = require('jsonapi-serializer').Serializer;
 
 
-const UserSerializer = new JSONAPISerializer('books', {
+const BookSerializer = new JSONAPISerializer('books', {
 
   attributes: ['title', 'isbn', 'author'],
   
@@ -13,4 +13,4 @@ const UserSerializer = new JSONAPISerializer('books', {
   }
 });
 
-module.exports = UserSerializer;
+module.exports = BookSerializer;
