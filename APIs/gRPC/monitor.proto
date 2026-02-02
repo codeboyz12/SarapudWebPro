@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package temperature;
+
+service TemperatureService {
+  rpc GetCurrentTemperature (Empty) returns (TempResponse) {}
+  rpc StreamTemperatures (Empty) returns (stream TempResponse) {}
+}
+
+message Empty {}
+
+message TempResponse {
+  float value = 1;
+  string unit = 2;
+  string timestamp = 3;
+}

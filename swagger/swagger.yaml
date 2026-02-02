@@ -1,0 +1,136 @@
+openapi: 3.1.0
+info:
+  title: Book Management System API
+  description: API สำหรับจัดการระบบหนังสือ พร้อมระบบค้นหา จัดเรียง และ CRUD
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8000
+    description: Local Development Server
+
+paths:
+  /books:
+    get:
+      summary: ดึงรายการหนังสือทั้งหมด
+      description: สามารถค้นหาด้วยชื่อ/ผู้แต่ง และจัดเรียงข้อมูลตาม Title หรือ Price ได้
+      parameters:
+        - name: search
+          in: query
+          description: ค้นหาจากชื่อหนังสือหรือชื่อผู้แต่ง
+          schema:
+            type: string
+        - name: sortBy
+          in: query
+          description: เลือกฟิลด์ที่ต้องการจัดเรียง
+          schema:
+            type: string
+            enum: [title, price]
+        - name: order
+          in: query
+          description: รูปแบบการจัดเรียง (asc = น้อยไปมาก, desc = มากไปน้อย)
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: asc
+      responses:
+        '200':
+          description: สำเร็จ
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Book'
+    post:
+      summary: เพิ่มหนังสือเล่มใหม่
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookInput'
+      responses:
+        '201':
+          description: สร้างหนังสือสำเร็จ
+        '400':
+          description: ข้อมูลไม่ครบถ้วน (ต้องระบุ Title, Author และ Price)
+
+  /books/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: ID ของหนังสือ
+        schema:
+          type: integer
+    get:
+      summary: ดูรายละเอียดหนังสือรายเล่ม
+      responses:
+        '200':
+          description: พบข้อมูลหนังสือ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '404':
+          description: ไม่พบหนังสือที่ระบุ
+    put:
+      summary: แก้ไขข้อมูลหนังสือ
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookInput'
+      responses:
+        '200':
+          description: อัปเดตข้อมูลสำเร็จ
+        '404':
+          description: ไม่พบหนังสือที่ต้องการแก้ไข
+    delete:
+      summary: ลบหนังสือออกจากระบบ
+      responses:
+        '204':
+          description: ลบสำเร็จ (No Content)
+        '404':
+          description: ไม่พบหนังสือที่ต้องการลบ
+
+components:
+  schemas:
+    Book:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        title:
+          type: string
+          example: "The Great Gatsby"
+        author:
+          type: string
+          example: "F. Scott Fitzgerald"
+        category:
+          type: string
+          example: "Classic"
+        price:
+          type: number
+          example: 350
+
+    BookInput:
+      type: object
+      required:
+        - title
+        - author
+        - price
+      properties:
+        title:
+          type: string
+          example: "Clean Code"
+        author:
+          type: string
+          example: "Robert C. Martin"
+        category:
+          type: string
+          example: "Education"
+        price:
+          type: number
+          example: 950
